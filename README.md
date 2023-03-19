@@ -4,16 +4,16 @@
 - Create repo
 - add files from exercise files
 - click actions tab
-- no choices under continuous integration that pop out
+- no choices under continuous integration that pop out; Go project is suggested.
 - select go under suggested actions
 - add `workflow_dispatch` to the triggers
-- add the following under "runs_on"...
+- Give the workflow permission to write to the Actions summary.  Add the following under "runs_on"...
 ```
     permissions:
       checks: write
 ```
 
-- change "Set up Go" to:
+- Use `go.mod` to determine the version of go instead of setting it in the workflow; Cache the libraries to speed up workflow runs. Change "Set up Go" to:
 ```
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -22,20 +22,19 @@
         cache: true
 ```
 
-- change "Build" step to:
+- Instead of building the package; install `gotest.tools/gotestsum` for testing.  Change "Build" step to:
 ```
     - name: Build
       run: |
         go install gotest.tools/gotestsum@latest
-        go mod download
 ```
 
-- change "Test..." call to:
+- Use `gotest.tools/gotestsum`.  Change "Test..." call to:
 ```
 gotestsum --format=standard-verbose --junitfile=junit.xml
 ```
 
--- add the following job at the end:
+-- Publish test reports.  Add the following job at the end:
 ```
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
